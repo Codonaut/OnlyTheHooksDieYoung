@@ -2,6 +2,7 @@ from settings import *
 import os
 import requests
 import json
+from utils import download_track, download_track_from_s3
 from pymongo import MongoClient
 from urlparse import urlparse
 from flask import (Flask, request, session, g, redirect, 
@@ -9,6 +10,7 @@ from flask import (Flask, request, session, g, redirect,
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from rq import Queue
+from tasks import get_track_data
 from worker import conn
 from utils import count_words_at_url
 
@@ -27,29 +29,29 @@ if MONGO_URL:
 	conn = MongoClient(MONGO_URL)
 	db = conn[urlparse(MONGO_URL).path[1:]]
 	track_collection = db['track_collection']
+	grace_collection = db['grace_data']
 else:
 	# Not on an app with the MongoHQ add-on, do some localhost action
 	conn = MongoClient()
 	db = conn['HookDB']
 	track_collection = db['track_collection']
+	grace_collection = db['grace_data']
 
-
-def download_track(track_url, s3_path):
-	''' Downloads a track at track_url from free music archive and sends to s3 '''
-	audio_file = request.get(track_url + '/download')
-	s3_key = Key(bucket)
-	s3_key.key = s3_path
-	s3_key.set_contents_from_string(audio_file)
 
 @app.route('/')
 def index():
 	return 'Hey there'
 
-@app.route('/count_dem_words')
+@app.route('/kickoff_grace_analysis')
 def count_dem_words():
-	result = q.enqueue(count_words_at_url, 'http://heroku.com')
-	return 'Counting...'
+	track = track_collection.find().limit(1)[0]
+	result = q.enqueue(get_track_data, track_id)
+	return 'Analyzing...'
 
+@app.route('/view_grace_data')
+def view_grace_data():
+	grace = grace_collection.find()
+	return str([g for g in grace])
 
 def download_page_helper(page):
 	limit = 50
@@ -73,6 +75,8 @@ def download_page(page):
 def view_tracks():
 	track_names = [unicode(t['track_title']).encode('ascii', errors='ignore') for t in track_collection.find()]
 	return 'Total of {0} tracks.<br/>  \n{1}'.format(len(track_names), '<br/>'.join(track_names))
+
+
 
 if not MONGO_URL:
 	if __name__ == '__main__':
