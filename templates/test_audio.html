@@ -37,6 +37,10 @@
 			
 			initContext();
 			console.log("Worked");
+			grabAInfo('24425');
+			grabBInfo('37909');
+			playFirstSound();
+			loadSoundB();
 		});
 		
 		function grabAInfo(trackId)
@@ -127,7 +131,7 @@
 			var endTime = sourceData.intervals[i].end_time;
 			StopSource(source1, starttime + endTime);
 			BStartTime = PlaySource(source2, 0);
-			loadSoundA(urlA);
+			loadSoundA();
 			
 		}
 		
@@ -141,17 +145,18 @@
 			var endTime = sourceData.intervals[i].end_time;
 			StopSource(source1, starttime + endTime);
 			AStartTime = PlaySource(source2, 0);
-			loadSoundA(urlB);
+			grabAInfo('54144');
+			loadSoundA();
 			
 		}
 		
-		function loadSoundA(url) {
+		function loadSoundA() {
 			var request = new XMLHttpRequest();
 			request.open('GET', ASourceData.url, true);
 			request.responseType = 'arraybuffer';
 			request.onload = function() {
 				context.decodeAudioData(request.response, function(buffer) {
-					BSource = getSource(buffer);
+					ASource = getSource(buffer);
 					findNextIntervalA(BSource, BStartTime, ASource, BSourceData);
 					
 				});
