@@ -11,7 +11,7 @@ from flask import (Flask, request, session, g, redirect,
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from rq import Queue
-from tasks import get_track_data
+from tasks import get_track_data, push_track_to_s3
 from worker import conn
 
 
