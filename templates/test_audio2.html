@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	</head>
+	<body>
+		<p>Web audio API example: load a sound file and play/stop it on a button click.</p>
+  <button onclick="initContext()">Init</button>
+  <button onclick="loadSoundA(url)">Load</button>
+  <button onclick="playSound(myAudioBuffer,109.747,10.288)">Play</button>
+  <button onclick="stopSound()">Stop</button>
+		<script type="text/javascript">
+		var context;
+		var audioBufferA = null;
+		var audioBufferB = null;
+		var source = null;
+		
+		var ASource;
+		var BSource;
+		var AStartTime;
+		var BStartTime;
+		var ASourceData;
+		var BSourceData;
+		
+		$(document).ready( function() {
+			
+			function initContext() {
+			  try {
+				// Fix up for prefixing
+				window.AudioContext = window.AudioContext||window.webkitAudioContext;
+				context = new AudioContext();
+			  }
+			  catch(e) {
+				alert('Web Audio API is not supported in this browser');
+			  }
+			}
+			
+			initContext();
+			console.log("Worked");
+			grabAInfo('24425');
+			grabBInfo('37909');
+			playFirstSound();
+			loadSoundB();
+		});
+		
+		function grabAInfo(trackId)
+		{
+			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
+			{
+				ASourceData = data;
+			});
+		}
+		
+		function grabBInfo(trackId)
+		{
+			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
+			{
+				BSourceData = data;
+			});
+		}
+		
+		function PlaySource(source, time)
+		{
+			source.start(0, time);
+			return context.currentTime - time;
+		}
+		
+		function StopSource(source, time)
+		{
+			source.stop(time);
+		}
+		function getSource(buffer)
+		{
+			var source = context.createBufferSource();
+			source.buffer = buffer;
+			source.connect(context.destination);
+			return source;
+		}
+	
+	function playFirstSound(url) {
+		var request = new XMLHttpRequest();
+		request.open('GET', ASourceData.url, true);
+		request.responseType = 'arraybuffer';
+		request.onload = function() {
+			context.decodeAudioData(request.response, function(buffer) {
+				ASource = getSource(buffer);
+				AStartTime = PlaySource(ASource,0);
+				
+			});
+		}
+		request.send();
+	}
+	function findNextIntervalB(source1, starttime, source2, sourceData) {
+			var checktime = context.currentTime - starttime;
+			var i = 0;
+			while (checktime < sourceData.intervals[i].end_time)
+			{
+				i += 1;
+			}
+			var endTime = sourceData.intervals[i].end_time;
+			StopSource(source1, starttime + endTime);
+			BStartTime = PlaySource(source2, 0);
+			loadSoundA(url);
+			
+		}
+		
+
+
+	
+		function loadSoundB() {
+			var request = new XMLHttpRequest();
+			request.open('GET', BSourceData.url, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function() {
+				context.decodeAudioData(request.response, function(buffer) {
+					BSource = getSource(buffer);
+					findNextIntervalB(ASource, AStartTime, BSource, ASourceData);
+					
+				});
+			}
+			request.send();
+		}
+		
+		function findNextIntervalB(source1, starttime, source2, sourceData) {
+			var checktime = context.currentTime - starttime;
+			var i = 0;
+			while (checktime < sourceData.intervals[i].end_time)
+			{
+				i += 1;
+			}
+			var endTime = sourceData.intervals[i].end_time;
+			StopSource(source1, starttime + endTime);
+			BStartTime = PlaySource(source2, 0);
+			loadSoundA();
+			
+		}
+		
+		function findNextIntervalA(source1, starttime, source2, sourceData) {
+			var checktime = context.currentTime - starttime;
+			var i = 0;
+			while (checktime < sourceData.intervals[i].end_time)
+			{
+				i += 1;
+			}
+			var endTime = sourceData.intervals[i].end_time;
+			StopSource(source1, starttime + endTime);
+			AStartTime = PlaySource(source2, 0);
+			grabAInfo('54144');
+			loadSoundA();
+			
+		}
+		
+		function loadSoundA() {
+			var request = new XMLHttpRequest();
+			request.open('GET', ASourceData.url, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function() {
+				context.decodeAudioData(request.response, function(buffer) {
+					ASource = getSource(buffer);
+					findNextIntervalA(BSource, BStartTime, ASource, BSourceData);
+					
+				});
+			}
+			request.send();
+		}
+
+		
+
+		</script>
+	</body>
+</html>C
