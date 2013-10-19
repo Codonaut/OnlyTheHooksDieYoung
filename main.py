@@ -52,7 +52,6 @@ def view_track(track_id):
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
 	all_tracks = track_collection.find()
-	print track['track_id']
 	for track in all_tracks:
 		if int(track['track_id']) == 63807:
 			continue
