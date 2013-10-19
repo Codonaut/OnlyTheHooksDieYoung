@@ -37,11 +37,11 @@
 			
 			initContext();
 			console.log("Worked");
-			grabFirstInfo();
+			grabFirstInfo('24425');
 			grabBInfo('37909');
 		});
 		
-		function grabFirstInfo('24425)
+		function grabFirstInfo(trackId)
 		{
 			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
 			{
