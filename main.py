@@ -12,7 +12,6 @@ from boto.s3.key import Key
 from rq import Queue
 from tasks import get_track_data
 from worker import conn
-from utils import count_words_at_url
 
 
 DEBUG = True
