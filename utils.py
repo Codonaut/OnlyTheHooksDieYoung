@@ -1,6 +1,6 @@
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
-from settings import *
+from settings import *	
 
 boto_conn = S3Connection(AWS_ACCESS_KEY, AWS_SECRET_KEY)
 bucket = boto_conn.get_bucket('only-the-hooks')
