@@ -11,19 +11,21 @@ collection = mongo_db['gracenote_data']
 BPM: [153.125]
 Start/end Chorus: 50.4 66.72
 '''
-url = "http://devapi.gracenote.com/v1/timeline/"
+url = "http://54.214.42.167/audio/"
 file_path = sys.argv[1]
-resp = requests.post(url,files={'audiofile':open(file_path,'rb')})
+resp = requests.post(url,files={'audiofile': open(file_path,'rb')})
 jresp = resp.json()
+print jresp
 file_id = jresp['id']
 
 progress = float(jresp['progress'])
 
 while progress < 1:
-    sleep(10)
-    resp = requests.get(url + str(file_id) +'/')
-    jresp = resp.json()
-    progress = float(jresp['progress'])
+	print progress
+	sleep(10)
+	resp = requests.get(url + str(file_id) +'/')
+	jresp = resp.json()
+	progress = float(jresp['progress'])
 
 feats = jresp['features']
 

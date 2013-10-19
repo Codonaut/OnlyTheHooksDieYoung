@@ -59,7 +59,11 @@ def count_dem_words():
 @app.route('/view_grace_data')
 def view_grace_data():
 	grace = grace_collection.find()
-	return str([g for g in grace])
+	al = []
+	for g in grace:
+		al.append(g)
+	print al
+	return str([(a['BPM'], a['track_id']) for a in al])
 
 def download_page_helper(page):
 	limit = 50

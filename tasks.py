@@ -2,8 +2,9 @@ from pymongo import MongoClient
 import requests
 from urlparse import urlparse
 from settings import *
+from time import sleep
 import os
-from utils import download_track
+from utils import download_track_to_disk
 
 MONGO_URL = os.environ.get('MONGOHQ_URL')
 if MONGO_URL:
@@ -24,7 +25,8 @@ Start/end Chorus: 50.4 66.72
 '''
 def get_track_data(track_id):
 	print track_id
-	url = "http://devapi.gracenote.com/v1/timeline/"
+	# url = "http://devapi.gracenote.com/v1/timeline/"
+	url = 'http://54.214.42.167/audio/'
 	track = track_collection.find({'track_id': track_id})[0]
 	print str(track)
 	audio_file = download_track_to_disk(track['track_url'], track['track_file'].split('.')[-1])
@@ -40,6 +42,7 @@ def get_track_data(track_id):
 	    resp = requests.get(url + str(file_id) +'/')
 	    jresp = resp.json()
 	    progress = float(jresp['progress'])
+	    print progress
 
 	feats = jresp['features']
 	feats['track_id'] = track_id
