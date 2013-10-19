@@ -8,6 +8,10 @@ from flask import (Flask, request, session, g, redirect,
 				   url_for, abort, render_template, flash)
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+from rq import Queue
+from worker import conn
+from utils import count_words_at_url
+
 
 DEBUG = True
 app = Flask(__name__)
@@ -15,6 +19,7 @@ app.config.from_object(__name__)
 boto_conn = S3Connection(AWS_ACCESS_KEY, AWS_SECRET_KEY)
 bucket = boto_conn.get_bucket('only-the-hooks')
 s3_url_format = 'https://twilio-rapper.s3.amazonaws.com/{end_path}'
+q = Queue(connection=conn)
 
 # Make sure to set this url
 MONGO_URL = os.environ.get('MONGOHQ_URL')
@@ -39,6 +44,12 @@ def download_track(track_url, s3_path):
 @app.route('/')
 def index():
 	return 'Hey there'
+
+@app.route('/count_dem_words')
+def count_dem_words():
+	result = q.enqueue(count_words_at_url, 'http://heroku.com')
+	return 'Counting...'
+
 
 def download_page_helper(page):
 	limit = 50
