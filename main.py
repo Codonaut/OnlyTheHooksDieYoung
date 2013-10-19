@@ -44,7 +44,7 @@ def index():
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
 	track = track_collection.find().limit(1)[0]
-	result = q.enqueue(get_track_data, track_id)
+	result = q.enqueue(get_track_data, track['track_id'])
 	return 'Analyzing...'
 
 @app.route('/view_grace_data')
