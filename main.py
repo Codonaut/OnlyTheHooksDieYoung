@@ -39,8 +39,7 @@ else:
 
 @app.route('/clear_queue')
 def clear_queue():
-	with q.mutex:
-		q.queue.clear()
+	q.queue.clear()
 	return "cleared"
 
 @app.route('/')
