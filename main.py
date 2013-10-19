@@ -53,7 +53,7 @@ def test_audio():
 
 
 @app.route("/test_audio2")
-def test_audio():
+def test_audio2():
 	return render_template('test_audio2.html')
 
 
