@@ -77,7 +77,7 @@ def get_track_for_frontend():
 		rand_number = random.get_int(0, grace_collection.find().count())
 		grace = grace_collection.find().limit(-1).skip(rand_number).next()
 		url_tuple = get_track_url_and_intervals(track_collection.find_one({'track_id': grace['track_id']}))
-	return jsonify(url=url_tuple[0], segments=url_tuple[1])
+	return jsonify(url=url_tuple[0], intervals=url_tuple[1])
 
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
@@ -89,6 +89,12 @@ def count_dem_words():
 			continue
 		result = q.enqueue(get_track_data, track['track_id'])
 	return 'Analyzing...'
+
+@app.route('/kickoff_s3_upload')
+def add_to_s3():
+	all_grace = grace_collection.find()
+	for grace in all_grace:
+		pass
 
 @app.route('/view_grace_data')
 def view_grace_data():
