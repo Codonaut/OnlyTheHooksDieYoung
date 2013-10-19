@@ -51,6 +51,12 @@ def index():
 def test_audio():
 	return render_template('test_audio.html')
 
+
+@app.route("/test_audio2")
+def test_audio():
+	return render_template('test_audio2.html')
+
+
 @app.route('/view_track/<track_id>')
 def view_track(track_id):
 	track = track_collection.find({'track_id': track_id})
