@@ -74,7 +74,7 @@ def get_track_url_and_intervals(track):
 def get_track_for_frontend():
 	url_tuple = None
 	while not url_tuple:
-		rand_number = random.get_int(0, grace_collection.find().count())
+		rand_number = random.getint(0, grace_collection.find().count())
 		grace = grace_collection.find().limit(-1).skip(rand_number).next()
 		url_tuple = get_track_url_and_intervals(track_collection.find_one({'track_id': grace['track_id']}))
 	return jsonify(url=url_tuple[0], intervals=url_tuple[1])
