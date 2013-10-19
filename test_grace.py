@@ -1,5 +1,6 @@
 import requests
 from time import sleep
+import sys
 from pymongo import MongoClient
 
 mongo_client = MongoClient()
@@ -11,7 +12,7 @@ BPM: [153.125]
 Start/end Chorus: 50.4 66.72
 '''
 url = "http://devapi.gracenote.com/v1/timeline/"
-file_path = 'heresy.mp3'
+file_path = sys.argv[1]
 resp = requests.post(url,files={'audiofile':open(file_path,'rb')})
 jresp = resp.json()
 file_id = jresp['id']
@@ -26,7 +27,7 @@ while progress < 1:
 
 feats = jresp['features']
 
-with open('features.json', 'w') as fn:
+with open(sys.argv[2], 'w') as fn:
 	fn.write(str(feats))
 
 collection.insert(feats)

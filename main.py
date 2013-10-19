@@ -19,7 +19,7 @@ s3_url_format = 'https://twilio-rapper.s3.amazonaws.com/{end_path}'
 MONGO_URL = os.environ.get('MONGOHQ_URL')
 if MONGO_URL:
 	conn = MongoClient(MONGO_URL)
-	db = conn['HookDB']
+	db = conn[urlparse(MONGO_URL).path[1:]]
 	track_collection = db['track_collection']
 else:
 	# Not on an app with the MongoHQ add-on, do some localhost action
