@@ -60,8 +60,8 @@ def download_page(page):
 
 @app.route('/view_all_tracks')
 def view_tracks():
-	track_names = [t['track_title'] for t in track_collection.find()]
-	return 'Total of {0} tracks.  \n{1}'.format(len(track_names), '\n'.join(track_names))
+	track_names = [unicode(t['track_title']).encode('ascii', errors='ignore') for t in track_collection.find()]
+	return 'Total of {0} tracks.<br/>  \n{1}'.format(len(track_names), '<br/>'.join(track_names))
 
 if not MONGO_URL:
 	if __name__ == '__main__':
