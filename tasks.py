@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import requests
+from settings import *
 import os
 from utils import download_track_from_s3
 
