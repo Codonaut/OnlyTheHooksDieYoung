@@ -40,31 +40,23 @@ def download_track(track_url, s3_path):
 def index():
 	return 'Hey there'
 
-@app.route('/download_all')
-def download_all_free_tracks():
+def download_page_helper(page):
 	limit = 50
 	hiphop_id = 21
-	page = 1
 	track_url = 'http://freemusicarchive.org/api/get/tracks.json?api_key={0}&limit={1}&genre_id={2}&page={3}'.format(
-					MUSIC_ARCHIVE_API_KEY, limit, hiphop_id, '{0}')
-	response = requests.get(track_url.format(page))
+					MUSIC_ARCHIVE_API_KEY, limit, hiphop_id, page)
+	response = requests.get(track_url)
 	response_dict = json.loads(response.content)
-
-	total = int(response_dict['total'])
-	all_hiphop = []
-	while True:
-		if response_dict['dataset'] and len(response_dict['dataset']) > 0:
-			for track in response_dict['dataset']:
-				s3_path = 'tracks/{}'.format(track['track_file'])
-				track['s3_path'] = s3_path
-				track_collection.insert(track)
-		else:
-			break
-		page += 1
-		response = requests.get(track_url.format(page))
-		response_dict = json.loads(response.content)
+	if response_dict['dataset'] and len(response_dict['dataset']) > 0:
+		for track in response_dict['dataset']:
+			s3_path = 'tracks/{}'.format(track['track_file'])
+			track['s3_path'] = s3_path
+			track_collection.insert(track)
 	return "Got them :)"
 
+@app.route('/download_page/<page>')
+def download_page(page):
+	return download_page_helper(int(page))
 
 if not MONGO_URL:
 	if __name__ == '__main__':
