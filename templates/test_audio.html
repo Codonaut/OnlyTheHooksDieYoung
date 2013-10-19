@@ -67,9 +67,9 @@
 			});
 		}
 		
-		function PlaySource(source, time)
+		function PlaySource(source, playtime, time)
 		{
-			source.start(0, time);
+			source.start(playtime, time);
 			return context.currentTime - time;
 		}
 		
@@ -93,7 +93,7 @@
 		request.onload = function() {
 			context.decodeAudioData(request.response, function(buffer) {
 				ASource = getSource(buffer);
-				AStartTime = PlaySource(ASource,0);
+				AStartTime = PlaySource(ASource,0,0);
 				
 			});
 		}
@@ -128,7 +128,7 @@
 			var endTime = sourceData.intervals[i].END;
 			console.log(endTime);
 			StopSource(source1, starttime + endTime);
-			BStartTime = PlaySource(source2, 0);
+			BStartTime = PlaySource(source2, starttime + endTime, 0);
 			grabBInfo('54144');
 			
 		}
@@ -143,8 +143,8 @@
 			var endTime = sourceData.intervals[i].END;
 			console.log(endTime);
 			StopSource(source1, starttime + endTime);
-			console.log(starttime + endTime);
-			AStartTime = PlaySource(source2, 0);
+			console.log(starttime + endTime)
+			AStartTime = PlaySource(source2,starttime + endTime, 0);
 			grabAInfo('54144');
 			
 		}
