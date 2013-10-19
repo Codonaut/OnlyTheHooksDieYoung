@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from pymongo import MongoClient
+from urlparse import urlparse
 from flask import (Flask, request, session, g, redirect, 
 				   url_for, abort, render_template, flash)
 from boto.s3.connection import S3Connection
