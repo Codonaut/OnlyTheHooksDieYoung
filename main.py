@@ -2,11 +2,12 @@ from settings import *
 import os
 import requests
 import json
+import random 
 from utils import download_track, download_track_from_s3
 from pymongo import MongoClient
 from urlparse import urlparse
 from flask import (Flask, request, session, g, redirect, 
-				   url_for, abort, render_template, flash)
+				   url_for, abort, render_template, jsonify, flash)
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from rq import Queue
@@ -52,11 +53,13 @@ def view_track(track_id):
 	if track.count() > 0:
 		return str(track[0])
 	else:
-		return "none"
+		return "None"
 
 def get_track_url_and_intervals(track):
+	if not track:
+		return None
 	url = s3_url_format.format(end_path=track['s3_path'])
-	grace_data = grace_collect.find_one({'track_id': track['track_id']})
+	grace_data = grace_collection.find_one({'track_id': track['track_id']})
 	if not grace_data:
 		return None
 	segments = grace_data['SEGMENT']
@@ -66,6 +69,15 @@ def get_track_url_and_intervals(track):
 			if beats[i] < seg['START'] and beats[i+1] > seg['START']:
 				seg['START'] = beats[i] 
 	return (url, segments)
+
+@app.route('/get_a_track')
+def get_track_for_frontend():
+	url_tuple = None
+	while not url_tuple:
+		rand_number = random.get_int(0, grace_collection.find().count())
+		grace = grace_collection.find().limit(-1).skip(rand_number).next()
+		url_tuple = get_track_url_and_intervals(track_collection.find_one({'track_id': grace['track_id']}))
+	return jsonify(url=url_tuple[0], segments=url_tuple[1])
 
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
