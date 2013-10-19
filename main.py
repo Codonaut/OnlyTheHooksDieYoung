@@ -51,9 +51,12 @@ def view_track(track_id):
 
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
-	track = track_collection.find().limit(1)[0]
+	all_tracks = track_collection.find()
 	print track['track_id']
-	result = q.enqueue(get_track_data, track['track_id'])
+	for track in all_tracks:
+		if int(track['track_id']) == 63807:
+			continue
+		result = q.enqueue(get_track_data, track['track_id'])
 	return 'Analyzing...'
 
 @app.route('/view_grace_data')
