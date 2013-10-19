@@ -2,11 +2,6 @@
 <html>
 	<head>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<style>
-			body {
-				background-image: url('https://s3.amazonaws.com/only-the-hooks/purty_wood.png');
-			}
-		</style>
 	</head>
 	<body>
 		<p>Web audio API example: load a sound file and play/stop it on a button click.</p>
@@ -128,7 +123,7 @@
 			var checktime = context.currentTime - starttime;
 			console.log(checktime);
 			var i = 0;
-			while (checktime < sourceData.intervals[i].end_time)
+			while (checktime > sourceData.intervals[i].end_time)
 			{
 				i += 1;
 				console.log(i);
@@ -145,7 +140,7 @@
 			var checktime = context.currentTime - starttime;
 			console.log(checktime);
 			var i = 0;
-			while (checktime < sourceData.intervals[i].END)
+			while (checktime > sourceData.intervals[i].END)
 			{
 				i += 1;
 				console.log(i);
