@@ -41,9 +41,18 @@ else:
 def index():
 	return 'Hey there'
 
+@app.route('/view_track/<track_id>')
+def view_track(track_id):
+	track = track_collection.find({'track_id': track_id})
+	if track.count() > 0:
+		return str(track[0])
+	else:
+		return "none"
+
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
 	track = track_collection.find().limit(1)[0]
+	print track['track_id']
 	result = q.enqueue(get_track_data, track['track_id'])
 	return 'Analyzing...'
 

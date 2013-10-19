@@ -3,7 +3,7 @@ import requests
 from urlparse import urlparse
 from settings import *
 import os
-from utils import download_track_from_s3
+from utils import download_track
 
 MONGO_URL = os.environ.get('MONGOHQ_URL')
 if MONGO_URL:
@@ -23,12 +23,15 @@ BPM: [153.125]
 Start/end Chorus: 50.4 66.72
 '''
 def get_track_data(track_id):
+	print track_id
 	url = "http://devapi.gracenote.com/v1/timeline/"
 	track = track_collection.find({'track_id': track_id})[0]
-	audio_file = download_track_from_s3(track['s3_path'])
+	print str(track)
+	audio_file = download_track_to_disk(track['track_url'], track['track_file'].split('.')[-1])
 
-	resp = requests.post(url,files={'audiofile': audio_file})
+	resp = requests.post(url,files={'audiofile': open(audio_file, 'rb')})
 	jresp = resp.json()
+	print jresp.keys()
 	file_id = jresp['id']
 	progress = float(jresp['progress'])
 
