@@ -21,7 +21,8 @@
 		var BStartTime;
 		var ASourceData;
 		var BSourceData;
-		
+		var IDS = ['24425','37909','54144','73785','68942','36234'];
+		var index = 0;
 		$(document).ready( function() {
 			
 			function initContext() {
@@ -37,8 +38,8 @@
 			
 			initContext();
 			console.log("Worked");
-			grabFirstInfo('24425');
-			grabBInfo('37909');
+			grabFirstInfo(IDS[index++]);
+			grabBInfo(IDS[index++]);
 		});
 		
 		function grabFirstInfo(trackId)
@@ -70,7 +71,7 @@
 		function PlaySource(source, playtime, time)
 		{
 			source.start(playtime, time);
-			return context.currentTime - time;
+			return playtime-time;
 		}
 		
 		function StopSource(source, time)
@@ -120,6 +121,7 @@
 		
 		function findNextIntervalB(source1, starttime, source2, sourceData) {
 			var checktime = context.currentTime - starttime;
+			console.log(checktime);
 			var i = 0;
 			while (checktime < sourceData.intervals[i].end_time)
 			{
@@ -130,12 +132,13 @@
 			console.log(endTime);
 			StopSource(source1, starttime + endTime);
 			BStartTime = PlaySource(source2, starttime + endTime, 0);
-			grabAInfo('54144');
+			grabAInfo(IDS[index++]);
 			
 		}
 		
 		function findNextIntervalA(source1, starttime, source2, sourceData) {
 			var checktime = context.currentTime - starttime;
+			console.log(checktime);
 			var i = 0;
 			while (checktime < sourceData.intervals[i].END)
 			{
@@ -147,7 +150,7 @@
 			StopSource(source1, starttime + endTime);
 			console.log(starttime + endTime)
 			AStartTime = PlaySource(source2,starttime + endTime, 0);
-			grabBInfo('54144');
+			grabBInfo(IDS[index++]);
 			
 		}
 		
