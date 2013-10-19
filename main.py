@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 boto_conn = S3Connection(AWS_ACCESS_KEY, AWS_SECRET_KEY)
 bucket = boto_conn.get_bucket('only-the-hooks')
-s3_url_format = 'https://twilio-rapper.s3.amazonaws.com/{end_path}'
+s3_url_format = 'https://only-the-hooks.s3.amazonaws.com/{end_path}'
 q = Queue(connection=conn)
 
 # Make sure to set this url
@@ -39,7 +39,12 @@ else:
 
 @app.route('/')
 def index():
-	return 'Hey there'
+	tracks = track_collection.find()
+	return render_template('track_select.html', tracks=tracks)
+
+@app.route("/test_audio")
+def test_audio():
+	return render_template('test_audio.html')
 
 @app.route('/view_track/<track_id>')
 def view_track(track_id):
@@ -49,11 +54,26 @@ def view_track(track_id):
 	else:
 		return "none"
 
+def get_track_url_and_intervals(track):
+	url = s3_url_format.format(end_path=track['s3_path'])
+	grace_data = grace_collect.find_one({'track_id': track['track_id']})
+	if not grace_data:
+		return None
+	segments = grace_data['SEGMENT']
+	beats = grace_data['BEATS']
+	for i in xrange(len(beats)-1):
+		for seg in segments:
+			if beats[i] < seg['START'] and beats[i+1] > seg['START']:
+				seg['START'] = beats[i] 
+	return (url, segments)
+
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
 	all_tracks = track_collection.find()
 	for track in all_tracks:
 		if int(track['track_id']) == 63807:
+			continue
+		elif grace_collection.find_one({'track_id': track['track_id']}):
 			continue
 		result = q.enqueue(get_track_data, track['track_id'])
 	return 'Analyzing...'

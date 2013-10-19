@@ -28,7 +28,6 @@ def get_track_data(track_id):
 	# url = "http://devapi.gracenote.com/v1/timeline/"
 	url = 'http://54.214.42.167/audio/'
 	track = track_collection.find({'track_id': track_id})[0]
-	print str(track)
 	audio_file = download_track_to_disk(track['track_url'], track['track_file'].split('.')[-1])
 
 	resp = requests.post(url,files={'audiofile': open(audio_file, 'rb')})

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	</head>
+	<body>
+		<p>Web audio API example: load a sound file and play/stop it on a button click.</p>
+  <button onclick="initContext()">Init</button>
+  <button onclick="loadSoundA(url)">Load</button>
+  <button onclick="playSound(myAudioBuffer,109.747,10.288)">Play</button>
+  <button onclick="stopSound()">Stop</button>
+		<script type="text/javascript">
+		var context;
+		var audioBufferA = null;
+		var audioBufferB = null;
+		var source = null;
+		$(document).ready( function() {
+			
+			function initContext() {
+			  try {
+				// Fix up for prefixing
+				window.AudioContext = window.AudioContext||window.webkitAudioContext;
+				context = new AudioContext();
+			  }
+			  catch(e) {
+				alert('Web Audio API is not supported in this browser');
+			  }
+			}
+			
+			initContext();
+			console.log("Worked");
+		});
+		
+		var url = "https://s3.amazonaws.com/Only-The-Hooks-Die-Young/n.mp3";
+		//var url2 = "https://s3.amazonaws.com/Only-The-Hooks-Die-Young/m.mp3";
+		function playFirstSound(url) {
+			var request = new XMLHttpRequest();
+			request.open('GET', url, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function() {
+				context.decodeAudioData(request.response, function(buffer) {
+					var trackA = playSound(buffer,0);
+					loadSoundB(url, trackA);
+					
+				});
+			}
+			request.send();
+		}
+		function loadSoundA(url) {
+			var request = new XMLHttpRequest();
+			request.open('GET', url, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function() {
+				context.decodeAudioData(request.response, function(buffer) {
+					playSound(buffer,109.747,10.288);
+					//loadSoundB(url);
+						 
+				});
+			}
+			request.send();
+		}
+		function loadSoundB(url, trackA) {
+			var request = new XMLHttpRequest();
+			request.open('GET', url, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function() {
+				context.decodeAudioData(request.response, function(buffer) {
+					playSound(buffer,109.747,10.288);
+					//loadSoundB(url);
+					
+				});
+			}
+			request.send();
+		}
+		function playSound(anybuffer, time) {
+			var source = context.createBufferSource();
+			source.buffer = anybuffer;
+			source.connect(context.destination);
+			source.start(0, time);
+			var trackArray = new Array();
+			trackArray[0] = source;
+			trackArray[1] = context.currentTime - time;
+			return trackArray;
+		}
+		
+		function stopSound() {
+			if (source) {
+				source.stop();
+			}
+		}
+
+		</script>
+	</body>
+</html>
