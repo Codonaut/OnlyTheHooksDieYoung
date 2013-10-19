@@ -37,17 +37,25 @@
 			
 			initContext();
 			console.log("Worked");
-			grabAInfo('24425');
+			grabFirstInfo();
 			grabBInfo('37909');
 			playFirstSound();
-			loadSoundB();
 		});
 		
+		function grabFirstInfo('24425)
+		{
+			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
+			{
+				ASourceData = data;
+				playFirstSound();
+			});
+		}
 		function grabAInfo(trackId)
 		{
 			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
 			{
 				ASourceData = data;
+				loadSoundA();
 			});
 		}
 		
@@ -56,6 +64,7 @@
 			$.get("http://only-the-hooks.herokuapp.com/get_a_track/" + trackId, function(data) 
 			{
 				BSourceData = data;
+				loadSoundB();
 			});
 		}
 		
@@ -77,7 +86,7 @@
 			return source;
 		}
 	
-	function playFirstSound(url) {
+	function playFirstSound() {
 		var request = new XMLHttpRequest();
 		request.open('GET', ASourceData.url, true);
 		request.responseType = 'arraybuffer';
@@ -90,19 +99,7 @@
 		}
 		request.send();
 	}
-	function findNextIntervalB(source1, starttime, source2, sourceData) {
-			var checktime = context.currentTime - starttime;
-			var i = 0;
-			while (checktime < sourceData.intervals[i].end_time)
-			{
-				i += 1;
-			}
-			var endTime = sourceData.intervals[i].end_time;
-			StopSource(source1, starttime + endTime);
-			BStartTime = PlaySource(source2, 0);
-			loadSoundA(url);
-			
-		}
+
 		
 
 
@@ -131,7 +128,7 @@
 			var endTime = sourceData.intervals[i].end_time;
 			StopSource(source1, starttime + endTime);
 			BStartTime = PlaySource(source2, 0);
-			loadSoundA();
+			grabBInfo('54144');
 			
 		}
 		
@@ -146,7 +143,6 @@
 			StopSource(source1, starttime + endTime);
 			AStartTime = PlaySource(source2, 0);
 			grabAInfo('54144');
-			loadSoundA();
 			
 		}
 		
