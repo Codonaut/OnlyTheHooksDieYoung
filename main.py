@@ -37,6 +37,11 @@ else:
 	track_collection = db['track_collection']
 	grace_collection = db['grace_data']
 
+@app.route('/clear_queue')
+def clear_queue():
+	with q.mutex:
+    	q.queue.clear()
+    return "cleared"
 
 @app.route('/')
 def index():
