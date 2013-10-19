@@ -74,14 +74,23 @@ def get_track_url_and_intervals(track):
 				seg['START'] = beats[i] 
 	return (url, segments)
 
+@app.route('/get_a_track/<track_id>')
 @app.route('/get_a_track')
-def get_track_for_frontend():
+def get_track_for_frontend(track_id=None):
 	url_tuple = None
-	while not url_tuple:
-		rand_number = random.randint(0, grace_collection.find().count())
-		grace = grace_collection.find().limit(-1).skip(rand_number).next()
+	i = 0
+	while not url_tuple and i < 5:
+		if not track_id:
+			curr_track_id = random.randint(0, grace_collection.find().count())
+			grace = grace_collection.find().limit(-1).skip(rand_number).next()
+		else:
+			grace = grace_collection.find_one({'track_id': track_id})
 		url_tuple = get_track_url_and_intervals(track_collection.find_one({'track_id': grace['track_id']}))
-	return jsonify(url=url_tuple[0], intervals=url_tuple[1])
+		i += 1
+	if i == 5:
+		return "Not good enough."
+	else:
+		return jsonify(url=url_tuple[0], intervals=url_tuple[1])
 
 @app.route('/kickoff_grace_analysis')
 def count_dem_words():
