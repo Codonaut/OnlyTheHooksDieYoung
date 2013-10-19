@@ -1,3 +1,6 @@
+*.mp3
+*.json
+venv
 *.py[cod]
 
 # C extensions
