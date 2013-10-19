@@ -94,7 +94,8 @@ def count_dem_words():
 def add_to_s3():
 	all_grace = grace_collection.find()
 	for grace in all_grace:
-		pass
+		result = q.enqueue(push_track_to_s3, grace['track_id'])
+	return "getting dem tracks"
 
 @app.route('/view_grace_data')
 def view_grace_data():
